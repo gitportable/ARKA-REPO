@@ -1,0 +1,2 @@
+def get_adult_user_names(users):
+    return [user['name'] for user in users if user['age'] > 18]
