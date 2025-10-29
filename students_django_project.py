@@ -1,35 +1,13 @@
-"""
-
-Run this script once:
-
-    python students_django_project.py
-
-It will:
-1. Create a virtual-env (if it does not exist)
-2. Install Django + DRF
-3. Scaffold the Django project + 'students' app
-4. Write every required file (settings, urls, models, serializers, views, …)
-5. Run migrations and start the dev server on http://127.0.0.1:8000
-
-After that you can `git init`, add everything and push to GitHub.
-"""
-
 import os
 import sys
 import subprocess
 from pathlib import Path
 
-# ----------------------------------------------------------------------
-# Helper: write file safely
-# ----------------------------------------------------------------------
 def write_file(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
     print(f"Created {path}")
 
-# ----------------------------------------------------------------------
-# 1. Prepare environment
-# ----------------------------------------------------------------------
 BASE = Path.cwd() / "students_project"
 VENV = BASE / "venv"
 
@@ -37,7 +15,6 @@ if not VENV.exists():
     subprocess.check_call([sys.executable, "-m", "venv", str(VENV)])
     print("Virtualenv created")
 
-# Activate venv & get pip executable
 if sys.platform == "win32":
     pip = VENV / "Scripts" / "pip.exe"
     python = VENV / "Scripts" / "python.exe"
@@ -45,15 +22,10 @@ else:
     pip = VENV / "bin" / "pip"
     python = VENV / "bin" / "python"
 
-# Upgrade pip & install requirements
 subprocess.check_call([str(pip), "install", "--upgrade", "pip"])
 subprocess.check_call([str(pip), "install", "Django==4.2.7", "djangorestframework==3.14.0"])
 print("Dependencies installed")
-
-# ----------------------------------------------------------------------
-# 2. Scaffold Django project + app
-# ----------------------------------------------------------------------
-manage = python  # we will use the venv's python as manage.py
+manage = python  
 
 if not (BASE / "manage.py").exists():
     subprocess.check_call([
@@ -62,24 +34,17 @@ if not (BASE / "manage.py").exists():
     ])
     print("Django project created")
 
-os.chdir(BASE)  # work inside the project folder from now on
+os.chdir(BASE) 
 
-# Create the 'students' app if missing
 students_app = BASE / "students"
 if not students_app.exists():
     subprocess.check_call([str(manage), "startapp", "students"])
     print("App 'students' created")
-
-# ----------------------------------------------------------------------
-# 3. Write / overwrite every file
-# ----------------------------------------------------------------------
-
-# ---- requirements.txt -------------------------------------------------
 write_file(BASE / "requirements.txt", """Django==4.2.7
 djangorestframework==3.14.0
 """)
 
-# ---- students_project/settings.py ------------------------------------
+# students_project/settings.py 
 settings_py = """\
 import os
 from pathlib import Path
@@ -148,7 +113,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 """
 write_file(BASE / "students_project" / "settings.py", settings_py)
 
-# ---- students_project/urls.py ----------------------------------------
+# students_project/urls.py 
 proj_urls = """\
 from django.contrib import admin
 from django.urls import path, include
@@ -160,7 +125,7 @@ urlpatterns = [
 """
 write_file(BASE / "students_project" / "urls.py", proj_urls)
 
-# ---- students/models.py -----------------------------------------------
+# students/models.py 
 models_py = """\
 from django.db import models
 
@@ -177,7 +142,7 @@ class Student(models.Model):
 """
 write_file(students_app / "models.py", models_py)
 
-# ---- students/serializers.py -----------------------------------------
+#students/serializers.py
 serializers_py = """\
 from rest_framework import serializers
 from .models import Student
@@ -189,7 +154,7 @@ class StudentSerializer(serializers.ModelSerializer):
 """
 write_file(students_app / "serializers.py", serializers_py)
 
-# ---- students/views.py ------------------------------------------------
+#students/views.py
 views_py = """\
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -213,7 +178,7 @@ def student_list(request):
 """
 write_file(students_app / "views.py", views_py)
 
-# ---- students/urls.py -------------------------------------------------
+#students/urls.py
 app_urls = """\
 from django.urls import path
 from . import views
@@ -224,7 +189,7 @@ urlpatterns = [
 """
 write_file(students_app / "urls.py", app_urls)
 
-# ---- students/admin.py ------------------------------------------------
+#students/admin.py 
 admin_py = """\
 from django.contrib import admin
 from .models import Student
@@ -236,8 +201,7 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ("age",)
 """
 write_file(students_app / "admin.py", admin_py)
-
-# ---- students/apps.py (just to be explicit) ---------------------------
+#students/apps.py
 apps_py = """\
 from django.apps import AppConfig
 
@@ -246,24 +210,16 @@ class StudentsConfig(AppConfig):
     name = "students"
 """
 write_file(students_app / "apps.py", apps_py)
-
-# ----------------------------------------------------------------------
-# 4. Run migrations & create superuser (optional)
-# ----------------------------------------------------------------------
 subprocess.check_call([str(manage), "makemigrations"])
 subprocess.check_call([str(manage), "migrate"])
 print("Migrations applied")
 
-# Uncomment the next two lines if you want a superuser automatically
+# Uncomment if you want a superuser automatically
 # subprocess.check_call([str(manage), "createsuperuser", "--noinput",
 #                        "--username", "admin", "--email", "admin@example.com"])
 
-# ----------------------------------------------------------------------
-# 5. Start the server (in a new process)
-# ----------------------------------------------------------------------
+#HAS TO BE RUN IN NEW PROCESS
 print("\nAll files are ready!")
 print("Starting Django development server at http://127.0.0.1:8000")
 print("API endpoint: http://127.0.0.1:8000/api/students/\n")
-
-# Run the server in the same process (Ctrl+C to stop)
 os.execvp(str(manage), [str(manage), "runserver"])
