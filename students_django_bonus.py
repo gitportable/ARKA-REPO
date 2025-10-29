@@ -1,15 +1,3 @@
-#!/usr/bin/env python3
-"""
-students_django_bonus.py
-
-Run once:
-    python students_django_bonus.py
-
-Creates full Django project with:
-- /api/students/     → GET all, POST new
-- /api/students/adults/ → GET only adults (age > 18)
-"""
-
 import os
 import sys
 import subprocess
@@ -19,13 +7,8 @@ def write_file(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
     print(f"Created {path}")
-
-# ----------------------------------------------------------------------
-# Setup
-# ----------------------------------------------------------------------
 BASE = Path.cwd() / "students_project"
 VENV = BASE / "venv"
-
 if not VENV.exists():
     subprocess.check_call([sys.executable, "-m", "venv", str(VENV)])
     print("Virtualenv created")
@@ -56,11 +39,6 @@ students_app = BASE / "students"
 if not students_app.exists():
     subprocess.check_call([str(manage), "startapp", "students"])
     print("App 'students' created")
-
-# ----------------------------------------------------------------------
-# Write Files
-# ----------------------------------------------------------------------
-
 write_file(BASE / "requirements.txt", """Django==4.2.7
 djangorestframework==3.14.0
 """)
@@ -171,7 +149,7 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "age", "email"]
 """)
 
-# views.py (WITH BONUS ENDPOINT)
+# views.py 
 write_file(students_app / "views.py", """\
 from rest_framework import status
 from rest_framework
